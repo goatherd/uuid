@@ -29,10 +29,11 @@ namespace Goatherd\Uuid;
  *           dual licensed as BSDL or Apache 2.0
  * @link     https://github.com/goatherd/uuid
  */
-class Uuid {
-
+class Uuid
+{
     /**@#+
      * UUID version
+     *
      * @var integer
      */
     const UUID_TIME = 1;       /* Time based UUID */
@@ -42,14 +43,15 @@ class Uuid {
     /**@#-*/
 
     /**
-     * Generate UUID.
+     * Public API, generate a UUID of 'type' in format 'fmt' for
+     * the given namespace 'ns' and node 'node'
      *
-     * @param integer $version version id (optional; defaults to 5)
-     * @param integer $fmt     format bitmask (optional; defaults to string)
-     * @param string  $node    node (optional; defaults to '').
-     * @param string  $ns      namespace (optional; defaults to '').
+     * @param integer $version uuid version
+     * @param integer $fmt     format
+     * @param string  $node    node
+     * @param string  $ns      namespace
      *
-     * @return string
+     * @return string uuid or NULL on error
      */
     public static function generate(
         $version = self::UUID_NAME_SHA1, $fmt = UuidInterface::FMT_BYTE,
@@ -67,7 +69,8 @@ class Uuid {
      *
      * @return integer
      */
-    static public function detectFormat($src) {
+    static public function detectFormat($src)
+    {
         $format = self::FMT_BINARY;
         if (is_string($src)) {
             return self::FMT_STRING;
@@ -80,42 +83,21 @@ class Uuid {
     }
 
     /**
-     * Public API, generate a UUID of 'type' in format 'fmt' for
-     * the given namespace 'ns' and node 'node'
-     *
-     * @param integer $type
-     * @param integer $fmt
-     * @param string $node
-     * @param string $ns
-     *
-     * @return string uuid or NULL on error
-     */
-    static public function generate(
-            $type, $fmt = self::FMT_BYTE, $node = "", $ns = ""
-    ) {
-        if (
-                !isset(self::$m_generate[$type]) ||
-                !isset(self::$m_convert[self::FMT_FIELD][$fmt])
-        ) {
-            return ;
-        }
-        $func = self::$m_generate[$type];
-        $conv = self::$m_convert[self::FMT_FIELD][$fmt];
-
-        $uuid = self::$func($ns, $node);
-        return self::$conv($uuid);
-    }
-
-    /**
      * Public API, convert a UUID from one format to another
      *
+     * @param string  $uuid uuid
+     * @param integer $from from version number
+     * @param integer $to   to version number
+     *
+     * @return string
      */
-    static public function convert($uuid, $from, $to)
-    {
-        $conv = self::$m_convert[$from][$to];
-        if (!isset($conv))
-            return ($uuid);
+    static public function convert(
+        $uuid, $from, $to = self::UUID_NAME_SHA1
+    ) {
+        $from = 'V' . (int) $from;
+        $to = 'V' . (int) $to;
 
-        return (self::$conv($uuid));
+        $fields = $from::getFields($uuid);
+        return $to::fromFields($fields);
     }
 }
