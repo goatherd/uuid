@@ -227,4 +227,46 @@ implements UuidInterface
         $byte = self::convString2byte($src);
         return self::convByte2binary($byte);
     }
+
+    /**
+     * Generate uuid field.
+     *
+     * @param string  $node node
+     * @param string  $ns   namespace
+     *
+     * @return array
+     */
+    abstract static public function generateField($node = '', $ns = '');
+
+    /**
+     * Generate uuid.
+     *
+     * @param integer $fmt  format
+     * @param string  $node node
+     * @param string  $ns   namespace
+     *
+     * @return string
+     */
+    public static function generate($fmt = self::FMT_BYTE, $node = '', $ns = '')
+    {
+        $field = static::generateField($node, $ns);
+        $uuid = null;
+        switch($fmt) {
+            case self::FMT_BINARY:
+                $uuid = self::convField2binary($field);
+                break;
+
+            case self::FMT_BYTE:
+                $uuid = self::convField2byte($field);
+                break;
+
+            case self::FMT_STRING:
+                $uuid = self::convField2string($field);
+                break;
+
+            default:
+        }
+
+        return $uuid;
+    }
 }

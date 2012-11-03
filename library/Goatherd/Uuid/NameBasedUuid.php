@@ -27,20 +27,29 @@ namespace Goatherd\Uuid;
 abstract class NameBasedUuid
 extends UuidAbstract
 {
+    /**
+     * Hash method.
+     *
+     * @var string
+     */
     static protected $hash;
 
+    /**
+     * Version id.
+     *
+     * @var integer
+     */
     static protected $version;
 
     /**
-     * Generate uuid.
+     * Generate uuid field.
      *
-     * @param integer $fmt  format
      * @param string  $node node
      * @param string  $ns   namespace
      *
-     * @return number
+     * @return array
      */
-    static public function generate($fmt = self::FMT_BYTE, $node = '', $ns = '')
+    static public function generateField($node = '', $ns = '')
     {
         $ns_fmt = $ns === ''?self::FMT_STRING:Factory::detectFormat($ns);
         if ($ns_fmt == self::FMT_BYTE) {

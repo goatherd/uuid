@@ -27,7 +27,17 @@ namespace Goatherd\Uuid;
 class V3
 extends NameBasedUuid
 {
+    /**
+     * Hash method.
+     *
+     * @var string
+     */
     static protected $hash = 'md5';
 
+    /**
+     * Version id.
+     *
+     * @var integer
+     */
     static protected $version = Factory::UUID_NAME_MD5;
 }
