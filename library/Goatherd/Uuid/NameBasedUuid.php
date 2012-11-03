@@ -44,8 +44,8 @@ extends UuidAbstract
     /**
      * Generate uuid field.
      *
-     * @param string  $node node
-     * @param string  $ns   namespace
+     * @param string $node node
+     * @param string $ns   namespace
      *
      * @return array
      */

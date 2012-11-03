@@ -134,7 +134,7 @@ implements UuidInterface
      */
     static public function convByte2field($uuid)
     {
-        $field = self::$m_uuid_field;
+        $field = static::$uuidFields;
         $field['time_low'] = ($uuid[0] << 24) | ($uuid[1] << 16) |
             ($uuid[2] << 8) | $uuid[3];
         $field['time_mid'] = ($uuid[4] << 8) | $uuid[5];
@@ -188,7 +188,7 @@ implements UuidInterface
     static public function convString2field($src)
     {
         $parts = sscanf($src, '%x-%x-%x-%x-%02x%02x%02x%02x%02x%02x');
-        $field = self::$m_uuid_field;
+        $field = static::$uuidFields;
         $field['time_low'] = ($parts[0]);
         $field['time_mid'] = ($parts[1]);
         $field['time_hi'] = ($parts[2]);
@@ -231,8 +231,8 @@ implements UuidInterface
     /**
      * Generate uuid field.
      *
-     * @param string  $node node
-     * @param string  $ns   namespace
+     * @param string $node node
+     * @param string $ns   namespace
      *
      * @return array
      */
@@ -252,19 +252,19 @@ implements UuidInterface
         $field = static::generateField($node, $ns);
         $uuid = null;
         switch($fmt) {
-            case self::FMT_BINARY:
-                $uuid = self::convField2binary($field);
-                break;
+        case self::FMT_BINARY:
+            $uuid = self::convField2binary($field);
+            break;
 
-            case self::FMT_BYTE:
-                $uuid = self::convField2byte($field);
-                break;
+        case self::FMT_BYTE:
+            $uuid = self::convField2byte($field);
+            break;
 
-            case self::FMT_STRING:
-                $uuid = self::convField2string($field);
-                break;
+        case self::FMT_STRING:
+            $uuid = self::convField2string($field);
+            break;
 
-            default:
+        default:
         }
 
         return $uuid;
