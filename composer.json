@@ -1,5 +1,5 @@
 {
-    "name": "goatherd/goatherd-library/uuid",
+    "name": "goatherd/goatherd-library-uuid",
     "version": "1.0-pre",
     "type": "library",
     "description": "UUID generator for PHP 5.3 or newer",
