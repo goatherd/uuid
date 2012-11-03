@@ -17,3 +17,19 @@ Composer support was added and registered with [packagist](https://packagist.org
 The component will be integrated with [goatherd library](https://github.com/goatherd/Goatherd-library).
 
 With beta and stable release some improvements and unit tests will be added.
+
+Usage
+-----
+
+    <?php
+    use \Goatherd\Uuid\Factory;
+    use \Goatherd\Uuid\UuidInterface;
+    
+    // default version 5 byte formated uuid
+    $uuid = Factory::generate();
+    
+    // version 4 string formated uuid
+    $uuid = Factory::generate(Factory::UUID_RANDOM, UuidInterface::FMT_STRING);
+    
+    // directly get version 4 uuid as string
+    $uuid = \Goatherd\Uuid\V4::generate(UuidInterface::FMT_STRING);
