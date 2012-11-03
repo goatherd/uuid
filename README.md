@@ -18,18 +18,24 @@ The component will be integrated with [goatherd library](https://github.com/goat
 
 With beta and stable release some improvements and unit tests will be added.
 
+Please note that the interface is not yet final.
+
 Usage
 -----
 
-    <?php
-    use \Goatherd\Uuid\Factory;
-    use \Goatherd\Uuid\UuidInterface;
-    
-    // default version 5 byte formated uuid
-    $uuid = Factory::generate();
-    
-    // version 4 string formated uuid
-    $uuid = Factory::generate(Factory::UUID_RANDOM, UuidInterface::FMT_STRING);
-    
-    // directly get version 4 uuid as string
-    $uuid = \Goatherd\Uuid\V4::generate(UuidInterface::FMT_STRING);
+```php
+use \Goatherd\Uuid\Factory;
+use \Goatherd\Uuid\UuidInterface;
+
+// default version 5 byte formated uuid
+$uuid = Factory::generate();
+
+// version 4 string formated uuid
+$uuid = Factory::generate(Factory::UUID_RANDOM, UuidInterface::FMT_STRING);
+
+// directly get version 4 uuid as string
+$uuid = \Goatherd\Uuid\V4::generate(UuidInterface::FMT_STRING);
+```
+
+Supported formats are `FMT_STRING`, `FMT_BYTE` and `FMT_BINARY`.
+UUID version 1, 3, 4 and 5 are available.
