@@ -20,8 +20,6 @@ namespace Goatherd\Uuid;
  *
  * Implements version 1, 3, 4 and 5
  *
- * @todo a validator would be helpful.
- *
  * @category Goaterd
  * @package  Goatherd\Uuid
  * @author   Maik Penz <maik@phpkuh.de>
@@ -29,7 +27,7 @@ namespace Goatherd\Uuid;
  *           dual licensed as BSDL or Apache 2.0
  * @link     https://github.com/goatherd/uuid
  */
-class Uuid
+class Factory
 {
     /**@#+
      * UUID version
@@ -71,9 +69,9 @@ class Uuid
      */
     static public function detectFormat($src)
     {
-        $format = self::FMT_BINARY;
+        $format = UuidInterface::FMT_BINARY;
         if (is_string($src)) {
-            return self::FMT_STRING;
+            return UuidInterface::FMT_STRING;
         } elseif (is_array($src)) {
             $len = count($src);
             $format = $len == 2 || ($len % 2) == 0?$len:-1;
