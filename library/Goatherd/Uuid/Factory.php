@@ -57,7 +57,7 @@ class Factory
         $node = '',
         $ns = ''
     ) {
-        $class = __NAMESPACE__ . '/V' . (int) $version;
+        $class = __NAMESPACE__ . '\V' . (int) $version;
 
         return $class::generate($fmt, $node, $ns);
     }
@@ -96,8 +96,8 @@ class Factory
         $from,
         $to = self::UUID_NAME_SHA1
     ) {
-        $from = __NAMESPACE__ . '/V' . (int) $from;
-        $to = __NAMESPACE__ . '/V' . (int) $to;
+        $from = __NAMESPACE__ . '\V' . (int) $from;
+        $to = __NAMESPACE__ . '\V' . (int) $to;
 
         $fields = $from::getFields($uuid);
         return $to::fromFields($fields);
