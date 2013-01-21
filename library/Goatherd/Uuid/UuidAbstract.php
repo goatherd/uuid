@@ -271,4 +271,28 @@ abstract class UuidAbstract implements UuidInterface
 
         return $uuid;
     }
+
+    /**
+     * Give array for conversion.
+     *
+     * @param string $uuid uuid
+     *
+     * @return array
+     */
+    public static function getFields($uuid)
+    {
+        throw new LogicException('Call to abstract ' . __CLAS__ . ':' . __METHOD__);
+    }
+
+    /**
+     * Generate uuid from array.
+     *
+     * @param array $fields uuid fields
+     *
+     * @return string uuid
+     */
+    public static function fromFields(array $fields)
+    {
+        throw new LogicException('Call to abstract ' . __CLAS__ . ':' . __METHOD__);
+    }
 }
