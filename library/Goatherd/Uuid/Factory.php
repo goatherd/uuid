@@ -57,9 +57,21 @@ class Factory
         $node = '',
         $ns = ''
     ) {
-        $class = __NAMESPACE__ . '\V' . (int) $version;
+        $class = self::getClass($version);
 
         return $class::generate($fmt, $node, $ns);
+    }
+
+    /**
+     * Fully qualified class name.
+     *
+     * @param string|int $version
+     *
+     * @return string
+     */
+    protected static function getClass($version)
+    {
+        return __NAMESPACE__ . '\\V' . (int) $version;
     }
 
     /**
@@ -96,8 +108,8 @@ class Factory
         $from,
         $to = self::UUID_NAME_SHA1
     ) {
-        $from = __NAMESPACE__ . '\V' . (int) $from;
-        $to = __NAMESPACE__ . '\V' . (int) $to;
+        $from = self::getClass($from);
+        $to = self::getClass($to);
 
         $fields = $from::getFields($uuid);
         return $to::fromFields($fields);

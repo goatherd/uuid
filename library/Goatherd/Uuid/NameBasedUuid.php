@@ -31,7 +31,7 @@ abstract class NameBasedUuid extends UuidAbstract
      *
      * @var string
      */
-    static protected $hash;
+    static protected $hash = 'sha1';
 
     /**
      * Version id.

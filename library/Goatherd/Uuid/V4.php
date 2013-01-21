@@ -24,7 +24,7 @@ namespace Goatherd\Uuid;
  *           dual licensed as BSDL or Apache 2.0
  * @link     https://github.com/goatherd/uuid
  */
-abstract class NameBasedUuid extends UuidAbstract
+class V4 extends UuidAbstract
 {
     /**
      * Generate uuid field.
