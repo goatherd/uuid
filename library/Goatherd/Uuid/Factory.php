@@ -41,6 +41,12 @@ class Factory
     /**@#-*/
 
     /**
+     *
+     * @var boolean
+     */
+    protected static $isBigEndian = null;
+
+    /**
      * Public API, generate a UUID of 'type' in format 'fmt' for
      * the given namespace 'ns' and node 'node'
      *
@@ -63,15 +69,24 @@ class Factory
     }
 
     /**
-     * Fully qualified class name.
+     * Public API, convert a UUID from one format to another
      *
-     * @param string|int $version
+     * @param string  $uuid uuid
+     * @param integer $from from version number
+     * @param integer $to   to version number
      *
      * @return string
      */
-    protected static function getClass($version)
-    {
-        return __NAMESPACE__ . '\\V' . (int) $version;
+    public static function convert(
+        $uuid,
+        $from,
+        $to = self::UUID_NAME_SHA1
+    ) {
+        $from = self::getClass($from);
+        $to = self::getClass($to);
+
+        $fields = $from::getFields($uuid);
+        return $to::fromFields($fields);
     }
 
     /**
@@ -95,23 +110,27 @@ class Factory
     }
 
     /**
-     * Public API, convert a UUID from one format to another
      *
-     * @param string  $uuid uuid
-     * @param integer $from from version number
-     * @param integer $to   to version number
+     * @return boolean
+     */
+    public static function isBigEndian()
+    {
+        if (null === self::$isBigEndian) {
+            $hex = 0x6162797A;
+            self::$isBigEndian = pack('L', $hex) === pack('N', $hex);
+        }
+        return self::$isBigEndian;
+    }
+
+    /**
+     * Fully qualified class name.
+     *
+     * @param string|int $version
      *
      * @return string
      */
-    public static function convert(
-        $uuid,
-        $from,
-        $to = self::UUID_NAME_SHA1
-    ) {
-        $from = self::getClass($from);
-        $to = self::getClass($to);
-
-        $fields = $from::getFields($uuid);
-        return $to::fromFields($fields);
+    protected static function getClass($version)
+    {
+        return __NAMESPACE__ . '\\V' . (int) $version;
     }
 }
