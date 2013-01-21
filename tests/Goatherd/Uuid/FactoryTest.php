@@ -17,6 +17,6 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     protected function isUuid($uuid) {
-        return $uuid != '';
+        return is_array($uuid) && count($uuid) == 16 && array_sum($uuid) > 0;
     }
 }
