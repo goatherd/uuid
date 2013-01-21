@@ -24,8 +24,7 @@ namespace Goatherd\Uuid;
  *           dual licensed as BSDL or Apache 2.0
  * @link     https://github.com/goatherd/uuid
  */
-abstract class UuidAbstract
-implements UuidInterface
+abstract class UuidAbstract implements UuidInterface
 {
     /**
      * Uuid wrapper for converter.
@@ -48,7 +47,7 @@ implements UuidInterface
      *
      * @return integer
      */
-    static public function swap32($x)
+    public static function swap32($x)
     {
         return (($x & 0x000000ff) << 24) | (($x & 0x0000ff00) << 8) |
         (($x & 0x00ff0000) >> 8) | (($x & 0xff000000) >> 24);
@@ -61,7 +60,7 @@ implements UuidInterface
      *
      * @return integer
      */
-    static public function swap16($x)
+    public static function swap16($x)
     {
         return (($x & 0x00ff) << 8) | (($x & 0xff00) >> 8);
     }
@@ -73,7 +72,7 @@ implements UuidInterface
      *
      * @return string
      */
-    static public function convField2byte($src)
+    public static function convField2byte($src)
     {
         $uuid[0] = ($src['time_low'] & 0xff000000) >> 24;
         $uuid[1] = ($src['time_low'] & 0x00ff0000) >> 16;
@@ -100,14 +99,21 @@ implements UuidInterface
      *
      * @return string
      */
-    static public function convField2string($src)
+    public static function convField2string($src)
     {
         $str = sprintf(
             '%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x',
-            ($src['time_low']), ($src['time_mid']), ($src['time_hi']),
-            $src['clock_seq_hi'], $src['clock_seq_low'],
-            $src['node'][0], $src['node'][1], $src['node'][2],
-            $src['node'][3], $src['node'][4], $src['node'][5]
+            ($src['time_low']),
+            ($src['time_mid']),
+            ($src['time_hi']),
+            $src['clock_seq_hi'],
+            $src['clock_seq_low'],
+            $src['node'][0],
+            $src['node'][1],
+            $src['node'][2],
+            $src['node'][3],
+            $src['node'][4],
+            $src['node'][5]
         );
         return ($str);
     }
@@ -119,7 +125,7 @@ implements UuidInterface
      *
      * @return string
      */
-    static public function convField2binary($src)
+    public static function convField2binary($src)
     {
         $byte = self::convField2byte($src);
         return self::convByte2binary($byte);
@@ -132,7 +138,7 @@ implements UuidInterface
      *
      * @return string
      */
-    static public function convByte2field($uuid)
+    public static function convByte2field($uuid)
     {
         $field = static::$uuidFields;
         $field['time_low'] = ($uuid[0] << 24) | ($uuid[1] << 16) |
@@ -155,7 +161,7 @@ implements UuidInterface
      *
      * @return string
      */
-    static public function convByte2string($src)
+    public static function convByte2string($src)
     {
         $field = self::convByte2field($src);
         return self::convField2string($field);
@@ -168,13 +174,9 @@ implements UuidInterface
      *
      * @return string
      */
-    static public function convByte2binary($src)
+    public static function convByte2binary($src)
     {
-        $raw = pack(
-            'C16', $src[0], $src[1], $src[2], $src[3],
-            $src[4], $src[5], $src[6], $src[7], $src[8], $src[9],
-            $src[10], $src[11], $src[12], $src[13], $src[14], $src[15]
-        );
+        $raw = pack('C16', $src[0], $src[1], $src[2], $src[3], $src[4], $src[5], $src[6], $src[7], $src[8], $src[9], $src[10], $src[11], $src[12], $src[13], $src[14], $src[15]);
         return ($raw);
     }
 
@@ -185,7 +187,7 @@ implements UuidInterface
      *
      * @return string
      */
-    static public function convString2field($src)
+    public static function convString2field($src)
     {
         $parts = sscanf($src, '%x-%x-%x-%x-%02x%02x%02x%02x%02x%02x');
         $field = static::$uuidFields;
@@ -209,7 +211,7 @@ implements UuidInterface
      *
      * @return string
      */
-    static public function convString2byte($src)
+    public static function convString2byte($src)
     {
         $field = self::convString2field($src);
         return self::convField2byte($field);
@@ -222,7 +224,7 @@ implements UuidInterface
      *
      * @return string
      */
-    static public function convString2binary($src)
+    public static function convString2binary($src)
     {
         $byte = self::convString2byte($src);
         return self::convByte2binary($byte);
@@ -236,7 +238,10 @@ implements UuidInterface
      *
      * @return array
      */
-    abstract static public function generateField($node = '', $ns = '');
+    public static function generateField($node = '', $ns = '')
+    {
+        throw new LogicException('Call to abstract ' . __CLAS__ . ':' . __METHOD__);
+    }
 
     /**
      * Generate uuid.
@@ -252,19 +257,16 @@ implements UuidInterface
         $field = static::generateField($node, $ns);
         $uuid = null;
         switch($fmt) {
-        case self::FMT_BINARY:
-            $uuid = self::convField2binary($field);
-            break;
-
-        case self::FMT_BYTE:
-            $uuid = self::convField2byte($field);
-            break;
-
-        case self::FMT_STRING:
-            $uuid = self::convField2string($field);
-            break;
-
-        default:
+            case self::FMT_BINARY:
+                $uuid = self::convField2binary($field);
+                break;
+            case self::FMT_BYTE:
+                $uuid = self::convField2byte($field);
+                break;
+            case self::FMT_STRING:
+                $uuid = self::convField2string($field);
+                break;
+            default:
         }
 
         return $uuid;

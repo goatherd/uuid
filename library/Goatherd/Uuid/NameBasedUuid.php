@@ -24,8 +24,7 @@ namespace Goatherd\Uuid;
  *           dual licensed as BSDL or Apache 2.0
  * @link     https://github.com/goatherd/uuid
  */
-abstract class NameBasedUuid
-extends UuidAbstract
+abstract class NameBasedUuid extends UuidAbstract
 {
     /**
      * Hash method.
@@ -49,7 +48,7 @@ extends UuidAbstract
      *
      * @return array
      */
-    static public function generateField($node = '', $ns = '')
+    public static function generateField($node = '', $ns = '')
     {
         $ns_fmt = $ns === ''?self::FMT_STRING:Factory::detectFormat($ns);
         if ($ns_fmt == self::FMT_BYTE) {

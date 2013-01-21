@@ -52,10 +52,12 @@ class Factory
      * @return string uuid or NULL on error
      */
     public static function generate(
-        $version = self::UUID_NAME_SHA1, $fmt = UuidInterface::FMT_BYTE,
-        $node = '', $ns = ''
+        $version = self::UUID_NAME_SHA1,
+        $fmt = UuidInterface::FMT_BYTE,
+        $node = '',
+        $ns = ''
     ) {
-        $class = 'V' . (int) $version;
+        $class = __NAMESPACE__ . '/V' . (int) $version;
 
         return $class::generate($fmt, $node, $ns);
     }
@@ -67,7 +69,7 @@ class Factory
      *
      * @return integer
      */
-    static public function detectFormat($src)
+    public static function detectFormat($src)
     {
         $format = UuidInterface::FMT_BINARY;
         if (is_string($src)) {
@@ -89,11 +91,13 @@ class Factory
      *
      * @return string
      */
-    static public function convert(
-        $uuid, $from, $to = self::UUID_NAME_SHA1
+    public static function convert(
+        $uuid,
+        $from,
+        $to = self::UUID_NAME_SHA1
     ) {
-        $from = 'V' . (int) $from;
-        $to = 'V' . (int) $to;
+        $from = __NAMESPACE__ . '/V' . (int) $from;
+        $to = __NAMESPACE__ . '/V' . (int) $to;
 
         $fields = $from::getFields($uuid);
         return $to::fromFields($fields);

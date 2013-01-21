@@ -24,8 +24,7 @@ namespace Goatherd\Uuid;
  *           dual licensed as BSDL or Apache 2.0
  * @link     https://github.com/goatherd/uuid
  */
-class V3
-extends NameBasedUuid
+class V3 extends NameBasedUuid
 {
     /**
      * Hash method.

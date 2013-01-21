@@ -24,8 +24,7 @@ namespace Goatherd\Uuid;
  *           dual licensed as BSDL or Apache 2.0
  * @link     https://github.com/goatherd/uuid
  */
-abstract class NameBasedUuid
-extends UuidAbstract
+abstract class NameBasedUuid extends UuidAbstract
 {
     /**
      * Generate uuid field.
@@ -35,7 +34,7 @@ extends UuidAbstract
      *
      * @return array
      */
-    static public function generateField($node = '', $ns = '')
+    public static function generateField($node = '', $ns = '')
     {
         $uuid = self::$uuidFields;
 
