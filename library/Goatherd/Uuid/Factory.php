@@ -65,6 +65,7 @@ class Factory
     ) {
         $class = self::getClass($version);
 
+        // TODO use class instance
         return $class::generate($fmt, $node, $ns);
     }
 
