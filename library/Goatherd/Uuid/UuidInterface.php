@@ -17,8 +17,6 @@ namespace Goatherd\Uuid;
 /**
  * Uuid generator interface.
  *
- * @todo a validator would be helpful.
- *
  * @category Goaterd
  * @package  Goatherd\Uuid
  * @author   Maik Penz <maik@phpkuh.de>
@@ -41,35 +39,35 @@ interface UuidInterface
     const FMT_WORD = 4;      // Word, 32-bit (not impl.)
     const FMT_SHORT = 8;     // Short (not impl.)
     const FMT_BYTE = 16;     // Byte
-    const FMT_DEFAULT = 16;
+    const FMT_DEFAULT = self::FMT_STRING;
     /**@#-*/
 
     /**
      * Generate uuid.
      *
-     * @param integer $fmt  format
-     * @param string  $node node
-     * @param string  $ns   namespace
+     * @param integer $format format
+     * @param string  $node   node
+     * @param string  $name   namespace
      *
      * @return string
      */
-    public static function generate($fmt = self::FMT_BYTE, $node = '', $ns = '');
+    public function generate($format = self::FMT_DEFAULT, $node = '', $name = '');
 
     /**
-     * Give array for conversion.
+     * Export as array for conversion.
      *
-     * @param string $uuid uuid
+     * @param string $uuid uuid in FTM_STRING format
      *
-     * @return array
+     * @return array in FMT_FIELD format
      */
-    public static function getFields($uuid);
+    public function getFields($uuid);
 
     /**
      * Generate uuid from array.
      *
-     * @param array $fields uuid fields
+     * @param array $fields uuid in FTM_FIELD format
      *
      * @return string uuid
      */
-    public static function fromFields(array $fields);
+    public function fromFields(array $fields);
 }

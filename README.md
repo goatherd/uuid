@@ -23,11 +23,11 @@ Usage
 ```php
 use \Goatherd\Uuid\Factory as Uuid;
 
-// default: version 5 byte formated uuid
+// default: version 5 string formated uuid
 $uuid = Uuid::generate();
 
-// version 4 string formated uuid
-$uuid = Uuid::generate(Uuid::UUID_RANDOM, Uuid::FMT_STRING);
+// version 4 byte formated uuid
+$uuid = Uuid::generate(Uuid::UUID_RANDOM, Uuid::FMT_BYTE);
 
 // get version 4 uuid from generator instance
 $uuidGenerator = new \Goatherd\Uuid\V4();

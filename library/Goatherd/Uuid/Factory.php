@@ -107,7 +107,7 @@ class Factory
      */
     public static function generate(
         $version = self::UUID_NAME_SHA1,
-        $fmt = UuidInterface::FMT_BYTE,
+        $fmt = UuidInterface::FMT_DEFAULT,
         $node = '',
         $ns = ''
     ) {
