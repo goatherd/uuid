@@ -47,25 +47,25 @@ class V1 extends UuidAbstract
         $time = ($tp['sec'] * 10000000) + ($tp['usec'] * 10) +
             0x01B21DD213814000;
 
-        $uuid['time_low'] = $time & 0xffffffff;
+        $uuid[self::FIELD_TIME_LOW] = $time & 0xffffffff;
         // Work around PHP 32-bit bit-operation limits
         $high = intval($time / 0xffffffff);
-        $uuid['time_mid'] = $high & 0xffff;
-        $uuid['time_hi'] = (($high >> 16) & 0xfff) | (Factory::UUID_TIME << 12);
+        $uuid[self::FIELD_TIME_MID] = $high & 0xffff;
+        $uuid[self::FIELD_TIME_HI] = (($high >> 16) & 0xfff) | (Factory::UUID_TIME << 12);
 
         /*
          * We don't support saved state information and generate
          * a random clock sequence each time.
          */
-        $uuid['clock_seq_hi'] = 0x80 | mt_rand(0, 64);
-        $uuid['clock_seq_low'] = mt_rand(0, 255);
+        $uuid[self::FIELD_CLOCK_SEQUENCE_HI] = 0x80 | mt_rand(0, 64);
+        $uuid[self::FIELD_CLOCK_SEQUENCE_LOW] = mt_rand(0, 255);
 
         /*
          * Node should be set to the 48-bit IEEE node identifier, but
          * we leave it for the user to supply the node.
          */
         for ($i = 0; $i < 6; $i++) {
-            $uuid['node'][$i] = ord(substr($node, $i, 1));
+            $uuid[$i] = ord(substr($node, $i, 1));
         }
 
         return $uuid;

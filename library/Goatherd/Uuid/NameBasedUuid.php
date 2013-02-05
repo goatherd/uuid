@@ -31,7 +31,7 @@ abstract class NameBasedUuid extends UuidAbstract
      *
      * @var string
      */
-    static protected $hash = 'sha1';
+    static protected $hashMethod = 'sha1';
 
     /**
      * Version id.
@@ -50,7 +50,7 @@ abstract class NameBasedUuid extends UuidAbstract
      */
     public static function generateField($node = '', $ns = '')
     {
-        $ns_fmt = $ns === ''?self::FMT_STRING:Factory::detectFormat($ns);
+        $ns_fmt = $ns === '' ? self::FMT_STRING : Factory::detectFormat($ns);
         if ($ns_fmt == self::FMT_BYTE) {
             $field = self::convByte2field($ns);
         } elseif ($ns_fmt == self::FMT_STRING) {
@@ -60,34 +60,35 @@ abstract class NameBasedUuid extends UuidAbstract
         }
 
         // Swap byte order to keep it in big endian on all platforms
-        $field['time_low'] = self::swap32($field['time_low']);
-        $field['time_mid'] = self::swap16($field['time_mid']);
-        $field['time_hi'] = self::swap16($field['time_hi']);
+        if (self::isBigEndian()) {
+            $field[self::FIELD_TIME_LOW] = self::swap32($field[self::FIELD_TIME_LOW]);
+            $field[self::FIELD_TIME_MID] = self::swap16($field[self::FIELD_TIME_MID]);
+            $field[self::FIELD_TIME_HI] = self::swap16($field[self::FIELD_TIME_HI]);
+        }
 
         // Convert the namespace to binary and concatenate node
-        $raw = self::convField2binary($field);
-        $raw .= $node;
+        $raw = self::convField2binary($field) . $node;
 
         // Hash the namespace and node and convert to a byte array
-        $hash = self::$hash;
+        $hash = self::$hashMethod;
         $val = $hash($raw, true);
-        $tmp = unpack('C16', $val);
-        foreach ($tmp as $k => $v) {
-            $byte[$k - 1] = $v;
-        }
+        $byte = array_values(unpack('C16', $val));
 
         // Convert byte array to a field array
         $field = self::convByte2field($byte);
 
-        $field['time_low'] = self::swap32($field['time_low']);
-        $field['time_mid'] = self::swap16($field['time_mid']);
-        $field['time_hi'] = self::swap16($field['time_hi']);
+        // Swap byte order to keep it in big endian on all platforms
+        if (self::isBigEndian()) {
+            $field[self::FIELD_TIME_LOW] = self::swap32($field[self::FIELD_TIME_LOW]);
+            $field[self::FIELD_TIME_MID] = self::swap16($field[self::FIELD_TIME_MID]);
+            $field[self::FIELD_TIME_HI] = self::swap16($field[self::FIELD_TIME_HI]);
+        }
 
         // Apply version and constants
-        $field['clock_seq_hi'] &= 0x3f;
-        $field['clock_seq_hi'] |= (1 << 7);
-        $field['time_hi'] &= 0x0fff;
-        $field['time_hi'] |= (self::$version << 12);
+        $field[self::FIELD_CLOCK_SEQUENCE_HI] &= 0x3f;
+        $field[self::FIELD_CLOCK_SEQUENCE_HI] |= (1 << 7);
+        $field[self::FIELD_TIME_HI] &= 0x0fff;
+        $field[self::FIELD_TIME_HI] |= (self::$version << 12);
 
         return $field;
     }

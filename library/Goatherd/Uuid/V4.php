@@ -38,13 +38,14 @@ class V4 extends UuidAbstract
     {
         $uuid = self::$uuidFields;
 
-        $uuid['time_hi'] = (4 << 12) | (mt_rand(0, 0x1000));
-        $uuid['clock_seq_hi'] = (1 << 7) | mt_rand(0, 128);
-        $uuid['time_low'] = mt_rand(0, 0xffff) + (mt_rand(0, 0xffff) << 16);
-        $uuid['time_mid'] = mt_rand(0, 0xffff);
-        $uuid['clock_seq_low'] = mt_rand(0, 255);
+        // order should be compatible to prior version of this generator
+        $uuid[self::FIELD_TIME_HI] = (4 << 12) | (mt_rand(0, 0x1000));
+        $uuid[self::FIELD_CLOCK_SEQUENCE_HI] = (1 << 7) | mt_rand(0, 128);
+        $uuid[self::FIELD_TIME_LOW] = mt_rand(0, 0xffff) + (mt_rand(0, 0xffff) << 16);
+        $uuid[self::FIELD_TIME_MID] = mt_rand(0, 0xffff);
+        $uuid[self::FIELD_CLOCK_SEQUENCE_LOW] = mt_rand(0, 255);
         for ($i = 0; $i < 6; $i++) {
-            $uuid['node'][$i] = mt_rand(0, 255);
+            $uuid[$i] = mt_rand(0, 255);
         }
         return $uuid;
     }
