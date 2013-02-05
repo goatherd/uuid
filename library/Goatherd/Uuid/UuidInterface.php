@@ -42,6 +42,19 @@ interface UuidInterface
     const FMT_DEFAULT = self::FMT_STRING;
     /**@#-*/
 
+    /**@#+
+     * Named FMT_FIELD keys.
+     * Keys 0 to 5 are reserved for node data.
+     *
+     * @var integer
+     */
+    const FIELD_TIME_LOW = 6;
+    const FIELD_TIME_MID = 7;
+    const FIELD_TIME_HI = 8;
+    const FIELD_CLOCK_SEQUENCE_LOW = 9;
+    const FIELD_CLOCK_SEQUENCE_HI = 10;
+    /**@#-*/
+
     /**
      * Generate uuid.
      *

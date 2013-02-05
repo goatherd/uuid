@@ -50,12 +50,6 @@ class Factory
     /**@#-*/
 
     /**
-     *
-     * @var boolean
-     */
-    private static $isBigEndian = null;
-
-    /**
      * Public API, convert a UUID from one format to another
      *
      * @param string  $uuid uuid
@@ -125,17 +119,5 @@ class Factory
     {
         $class = __NAMESPACE__ . '\\V' . (int) $version;
         return new $class();
-    }
-
-    /**
-     *
-     * @return boolean
-     */
-    public static function isBigEndian()
-    {
-        if (null === self::$isBigEndian) {
-            self::$isBigEndian = pack('L', 0x6162797A) === pack('N', 0x6162797A);
-        }
-        return self::$isBigEndian;
     }
 }

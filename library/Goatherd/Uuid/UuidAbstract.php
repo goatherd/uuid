@@ -14,6 +14,9 @@
 
 namespace Goatherd\Uuid;
 
+use Goatherd\Uuid\Exception\InvalidArgumentException;
+use Goatherd\Uuid\Exception\LogicException;
+
 /**
  * Uuid generator base.
  *
@@ -27,18 +30,29 @@ namespace Goatherd\Uuid;
 abstract class UuidAbstract implements UuidInterface
 {
     /**
-     * Uuid wrapper for converter.
+     * Uuid meta format used for convertion.
      *
      * @var array
      */
     protected static $uuidFields = array(
-            'time_low' => 0,      /* 32-bit */
-            'time_mid' => 0,      /* 16-bit */
-            'time_hi' => 0,       /* 16-bit */
-            'clock_seq_hi' => 0,  /*  8-bit */
-            'clock_seq_low' => 0, /*  8-bit */
-            'node' => array()     /* 48-bit */
+        self::FIELD_TIME_LOW => 0,           /* 32-bit */
+        self::FIELD_TIME_MID => 0,           /* 16-bit */
+        self::FIELD_TIME_Hi => 0,            /* 16-bit */
+        self::FIELD_CLOCK_SEQUENCE_LOW => 0, /*  8-bit */
+        self::FIELD_CLOCK_SEQUENCE_HI => 0,  /*  8-bit */
+        0 => 0, // 6 node words
+        1 => 0,
+        2 => 0,
+        3 => 0,
+        4 => 0,
+        5 => 0,
     );
+
+    /**
+     *
+     * @var boolean
+     */
+    private static $isBigEndian = null;
 
     /**
      * Swap byte order of a 32-bit number
@@ -49,11 +63,9 @@ abstract class UuidAbstract implements UuidInterface
      */
     public static function swap32($x)
     {
-        if (!Factory::isBigEndian()) {
-            return $x;
-        }
-        return (($x & 0x000000ff) << 24) | (($x & 0x0000ff00) << 8) |
-        (($x & 0x00ff0000) >> 8) | (($x & 0xff000000) >> 24);
+        return self::isBigEndian()
+            ? (($x & 0x000000ff) << 24) | (($x & 0x0000ff00) << 8) | (($x & 0x00ff0000) >> 8) | (($x & 0xff000000) >> 24)
+            : $x;
     }
 
     /**
@@ -65,10 +77,20 @@ abstract class UuidAbstract implements UuidInterface
      */
     public static function swap16($x)
     {
-        if (!Factory::isBigEndian()) {
-            return $x;
-        }
-        return (($x & 0x00ff) << 8) | (($x & 0xff00) >> 8);
+        return self::isBigEndian()
+            ? (($x & 0x00ff) << 8) | (($x & 0xff00) >> 8)
+            : $x;
+    }
+
+    /**
+     *
+     * @return boolean
+     */
+    protected static function isBigEndian()
+    {
+        return null === self::$isBigEndian
+            ? self::$isBigEndian = pack('L', 0x6162797A) == pack('N', 0x6162797A)
+            : self::$isBigEndian;
     }
 
     /**
@@ -80,19 +102,19 @@ abstract class UuidAbstract implements UuidInterface
      */
     public static function convField2byte($src)
     {
-        $uuid[0] = ($src['time_low'] & 0xff000000) >> 24;
-        $uuid[1] = ($src['time_low'] & 0x00ff0000) >> 16;
-        $uuid[2] = ($src['time_low'] & 0x0000ff00) >> 8;
-        $uuid[3] = ($src['time_low'] & 0x000000ff);
-        $uuid[4] = ($src['time_mid'] & 0xff00) >> 8;
-        $uuid[5] = ($src['time_mid'] & 0x00ff);
-        $uuid[6] = ($src['time_hi'] & 0xff00) >> 8;
-        $uuid[7] = ($src['time_hi'] & 0x00ff);
-        $uuid[8] = $src['clock_seq_hi'];
-        $uuid[9] = $src['clock_seq_low'];
+        $uuid[0] = ($src[self::FIELD_TIME_LOW] & 0xff000000) >> 24;
+        $uuid[1] = ($src[self::FIELD_TIME_LOW] & 0x00ff0000) >> 16;
+        $uuid[2] = ($src[self::FIELD_TIME_LOW] & 0x0000ff00) >> 8;
+        $uuid[3] = ($src[self::FIELD_TIME_LOW] & 0x000000ff);
+        $uuid[4] = ($src[self::FIELD_TIME_MID] & 0xff00) >> 8;
+        $uuid[5] = ($src[self::FIELD_TIME_MID] & 0x00ff);
+        $uuid[6] = ($src[self::FIELD_TIME_HI] & 0xff00) >> 8;
+        $uuid[7] = ($src[self::FIELD_TIME_HI] & 0x00ff);
+        $uuid[8] = $src[self::FIELD_CLOCK_SEQUENCE_HI];
+        $uuid[9] = $src[self::FIELD_CLOCK_SEQUENCE_LOW];
 
         for ($i = 0; $i < 6; $i++) {
-            $uuid[10+$i] = $src['node'][$i];
+            $uuid[10+$i] = $src[$i];
         }
 
         return ($uuid);
@@ -109,17 +131,17 @@ abstract class UuidAbstract implements UuidInterface
     {
         $str = sprintf(
             '%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x',
-            ($src['time_low']),
-            ($src['time_mid']),
-            ($src['time_hi']),
-            $src['clock_seq_hi'],
-            $src['clock_seq_low'],
-            $src['node'][0],
-            $src['node'][1],
-            $src['node'][2],
-            $src['node'][3],
-            $src['node'][4],
-            $src['node'][5]
+            $src[self::FIELD_TIME_LOW],
+            $src[self::FIELD_TIME_MID],
+            $src[self::FIELD_TIME_HI],
+            $src[self::FIELD_CLOCK_SEQUENCE_HI],
+            $src[self::FIELD_CLOCK_SEQUENCE_LOW],
+            $src[0],
+            $src[1],
+            $src[2],
+            $src[3],
+            $src[4],
+            $src[5]
         );
         return ($str);
     }
@@ -140,22 +162,20 @@ abstract class UuidAbstract implements UuidInterface
     /**
      * Convert.
      *
-     * @param string $uuid source
+     * @param string $src source
      *
      * @return string
      */
-    public static function convByte2field($uuid)
+    public static function convByte2field($src)
     {
-        $field = static::$uuidFields;
-        $field['time_low'] = ($uuid[0] << 24) | ($uuid[1] << 16) |
-            ($uuid[2] << 8) | $uuid[3];
-        $field['time_mid'] = ($uuid[4] << 8) | $uuid[5];
-        $field['time_hi'] = ($uuid[6] << 8) | $uuid[7];
-        $field['clock_seq_hi'] = $uuid[8];
-        $field['clock_seq_low'] = $uuid[9];
-
+        $field = static::$srcFields;
+        $field[self::FIELD_TIME_LOW] = ($src[0] << 24) | ($src[1] << 16) | ($src[2] << 8) | $src[3];
+        $field[self::FIELD_TIME_MID] = ($src[4] << 8) | $src[5];
+        $field[self::FIELD_TIME_HI] = ($src[6] << 8) | $src[7];
+        $field[self::FIELD_CLOCK_SEQUENCE_HI] = $src[8];
+        $field[self::FIELD_CLOCK_SEQUENCE_LOW] = $src[9];
         for ($i = 0; $i < 6; $i++) {
-            $field['node'][$i] = $uuid[10+$i];
+            $field[$i] = $src[10+$i];
         }
         return ($field);
     }
@@ -183,7 +203,7 @@ abstract class UuidAbstract implements UuidInterface
     public static function convByte2binary($src)
     {
         $raw = pack('C16', $src[0], $src[1], $src[2], $src[3], $src[4], $src[5], $src[6], $src[7], $src[8], $src[9], $src[10], $src[11], $src[12], $src[13], $src[14], $src[15]);
-        return ($raw);
+        return $raw;
     }
 
     /**
@@ -197,17 +217,17 @@ abstract class UuidAbstract implements UuidInterface
     {
         $parts = sscanf($src, '%x-%x-%x-%x-%02x%02x%02x%02x%02x%02x');
         $field = static::$uuidFields;
-        $field['time_low'] = ($parts[0]);
-        $field['time_mid'] = ($parts[1]);
-        $field['time_hi'] = ($parts[2]);
-        $field['clock_seq_hi'] = ($parts[3] & 0xff00) >> 8;
-        $field['clock_seq_low'] = $parts[3] & 0x00ff;
+        $field[self::FIELD_TIME_LOW] = ($parts[0]);
+        $field[self::FIELD_TIME_MID] = ($parts[1]);
+        $field[self::FIELD_TIME_HI] = ($parts[2]);
+        $field[self::FIELD_CLOCK_SEQUENCE_HI] = ($parts[3] & 0xff00) >> 8;
+        $field[self::FIELD_CLOCK_SEQUENCE_LOW] = $parts[3] & 0x00ff;
 
         for ($i = 0; $i < 6; $i++) {
-            $field['node'][$i] = $parts[4+$i];
+            $field[$i] = $parts[4+$i];
         }
 
-        return ($field);
+        return $field;
     }
 
     /**
@@ -236,6 +256,52 @@ abstract class UuidAbstract implements UuidInterface
         return self::convByte2binary($byte);
     }
 
+    /** {@inheritdoc} */
+    public function generate($format = self::FMT_BYTE, $node = '', $name = '')
+    {
+        $field = $this->generateField($node, $name);
+        return static::convertFieldTo($field, $format);
+    }
+
+    /**
+     *
+     * @param array   $field
+     * @param integer $format
+     *
+     * @return string
+     * @throws InvalidArgumentException
+     */
+    public static function convertFieldTo(array $field, $format)
+    {
+        switch($format) {
+            case static::FMT_BINARY:
+                $uuid = self::convField2binary($field);
+                break;
+            case static::FMT_BYTE:
+                $uuid = self::convField2byte($field);
+                break;
+            case static::FMT_STRING:
+                $uuid = self::convField2string($field);
+                break;
+            default:
+                throw new InvalidArgumentException(sprintf('Unsupported format "%s".', $fmt));
+        }
+
+        return $uuid;
+    }
+
+    /** {@inheritdoc} */
+    public function getFields($uuid)
+    {
+        throw new LogicException('Call to abstract ' . __CLASS__ . ':' . __METHOD__);
+    }
+
+    /** {@inheritdoc} */
+    public function fromFields(array $fields)
+    {
+        throw new LogicException('Call to abstract ' . __CLASS__ . ':' . __METHOD__);
+    }
+
     /**
      * Generate uuid field.
      *
@@ -244,61 +310,5 @@ abstract class UuidAbstract implements UuidInterface
      *
      * @return array
      */
-    public static function generateField($node = '', $ns = '')
-    {
-        throw new LogicException('Call to abstract ' . __CLASS__ . ':' . __METHOD__);
-    }
-
-    /**
-     * Generate uuid.
-     *
-     * @param integer $fmt  format
-     * @param string  $node node
-     * @param string  $ns   namespace
-     *
-     * @return string
-     */
-    public static function generate($fmt = self::FMT_BYTE, $node = '', $ns = '')
-    {
-        $field = static::generateField($node, $ns);
-        $uuid = null;
-        switch($fmt) {
-            case self::FMT_BINARY:
-                $uuid = self::convField2binary($field);
-                break;
-            case self::FMT_BYTE:
-                $uuid = self::convField2byte($field);
-                break;
-            case self::FMT_STRING:
-                $uuid = self::convField2string($field);
-                break;
-            default:
-        }
-
-        return $uuid;
-    }
-
-    /**
-     * Give array for conversion.
-     *
-     * @param string $uuid uuid
-     *
-     * @return array
-     */
-    public static function getFields($uuid)
-    {
-        throw new LogicException('Call to abstract ' . __CLASS__ . ':' . __METHOD__);
-    }
-
-    /**
-     * Generate uuid from array.
-     *
-     * @param array $fields uuid fields
-     *
-     * @return string uuid
-     */
-    public static function fromFields(array $fields)
-    {
-        throw new LogicException('Call to abstract ' . __CLASS__ . ':' . __METHOD__);
-    }
+    abstract public function generateField($node = '', $ns = '');
 }
