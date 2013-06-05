@@ -31,5 +31,5 @@ $uuid = Uuid::generate(Uuid::UUID_RANDOM, Uuid::FMT_BYTE);
 
 // get version 4 uuid from generator instance
 $uuidGenerator = new \Goatherd\Uuid\V4();
-$uuid = $uuidGenerator(Uuid::FTM_STRING);
+$uuid = $uuidGenerator(Uuid::FMT_STRING);
 ```
