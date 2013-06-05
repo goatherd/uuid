@@ -303,6 +303,14 @@ abstract class UuidAbstract implements UuidInterface
     }
 
     /**
+     * Shortcut for generate().
+     */
+    public function __invoke($format = self::FMT_BYTE, $node = '', $name = '')
+    {
+        return $this->generate($format, $node, $name);
+    }
+
+    /**
      * Generate uuid field.
      *
      * @param string $node node

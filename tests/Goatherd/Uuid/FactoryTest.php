@@ -16,6 +16,14 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->isUuid($uuid));
     }
 
+    // TODO test format detection
+
+    // TODO test conversion
+
+    // TODO test formats
+
+    // TODO test versions do generate output
+
     protected function isUuid($uuid) {
         return is_array($uuid) && count($uuid) == 16 && array_sum($uuid) > 0;
     }
