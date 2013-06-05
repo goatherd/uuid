@@ -33,8 +33,9 @@ $uuid = Factory::generate();
 // version 4 string formated uuid
 $uuid = Factory::generate(Factory::UUID_RANDOM, UuidInterface::FMT_STRING);
 
-// directly get version 4 uuid as string
-$uuid = \Goatherd\Uuid\V4::generate(UuidInterface::FMT_STRING);
+// get version 4 uuid from generator instance
+$uuidGenerator = new \Goatherd\Uuid\V4();
+$uuid = $uuidGenerator(Uuid::FMT_STRING);
 ```
 
 Supported formats are `FMT_STRING`, `FMT_BYTE` and `FMT_BINARY`.
